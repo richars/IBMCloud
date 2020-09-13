@@ -24,9 +24,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     env:
-      IBM_CF_USERNAME: ${{ secrets.IBM_ACCOUNT }}
-      IBM_CF_PASSWORD: ${{ secrets.IBM_CF_PASSWORD }}
-      IBM_CF_ORG_NAME: ${{ secrets.IBM_CF_ORG_NAME }}
+      IBM_CF_USERNAME: ${{ secrets.IBM_ACCOUNT_DM }}
+      IBM_CF_PASSWORD: ${{ secrets.IBM_CF_PASSWORD_DM }}
+      IBM_CF_ORG_NAME: ${{ secrets.IBM_CF_ORG_NAME_DM }}
       IBM_CF_SPACE_NAME: ${{ secrets.IBM_CF_SPACE_NAME }}
       IBM_CF_APP_NAME: ${{ secrets.IBM_APP_NAME }}
       V2_UUID: ${{ secrets.V2_ID }}
