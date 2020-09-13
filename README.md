@@ -1,95 +1,32 @@
-fork [https://github.com/CCChieh/IBMYes](https://github.com/CCChieh/IBMYes)  
+# IBM Cloud Foundry - V2Ray
 
+Use GitHub Actions to automatically deploy the latest version of V2Ray to IBM Cloud Foundry
 
-# fork修改内容:
-* `Secrets` 加入 `V2_ID`, `V2_PATH`, `ALTER_ID`,  
-  对应`vmess id`, `ws path`, `alterId`
-* 使用actions, 每周自动更新`v2ray`, 部署到 `IBM Cloud Foundray`.
-  
+[Read the details in my blog (in Chinese) | 中文教程](https://p3terx.com/archives/how-to-use-ibm-cloud-gracefully-for-free.html)
 
-# 配置流程
+## Usage
 
-### 配置IBM Cloud Fonudray
-* 注册并登录[https://cloud.ibm.com/](https://cloud.ibm.com/)
-* 点击右侧 创建资源
-* 点击`Cloud Foundray`
-* 创建公共应用程序
-* 填写相关信息: 区域达拉斯(免费). 内存最高256M. 应用名称. 配置资源选Go
-* 应用程序域名 就是 应用名称+域, 比如: `ibmyes.us-south.cf.appdomain.cloud`
-* 点击右侧 创建
+- Click the [Use this template](https://github.com/P3TERX/IBM-CF-V2/generate) button to create a new repository.
+- Click the `Settings` tab on your own repository, and then click the `Secrets` button to add the following encrypted environment variables:
+  - `IBM_CF_USERNAME`: IBM Cloud user name (email address)
+  - `IBM_CF_PASSWORD`: IBM Cloud password
+  - `IBM_CF_ORG_NAME`: Organization name, the default is the email address. Can be found on [this page](https://cloud.ibm.com/account/cloud-foundry).
+  - `IBM_CF_SPACE_NAME`: Space name, default is `dev`. Can be found on [this page](https://cloud.ibm.com/account/cloud-foundry).
+  - `IBM_CF_APP_NAME`: App name, fill in according to your preference.
+  - `V2_UUID`: UUID generator
+  - `V2_WS_PATH`: Any combination of English letters and numbers.
+- Click the `Run workflow` button on the Actions page.
+- Wait for the deployment to complete.
+- Click the relevant application on the [Cloud Foundry Public](https://cloud.ibm.com/cloudfoundry/public) page to view the access address.
 
-### 配置 Cloudflare 高速节点中转
-这部分不配置也可以直接连 应用程序域名 使用, 就是有点慢.
-* 注册并登录[https://www.cloudflare.com/](https://www.cloudflare.com/)
-* 点击 Workers
-* 点击 创建Worker
-* 在脚本位置加入下面这段, `url.hostname`修改为对应的 应用程序域名.
-```
-addEventListener(
-  "fetch",event => {
-    let url=new URL(event.request.url);
-    url.hostname="ibmyes.us-south.cf.appdomain.cloud";
-    let request=new Request(url,event.request);
-    event.respondWith(
-      fetch(request)
-    )
-  }
-)
-```
-* 点击保存并部署, 这里会给一个网址(比如`cloudflare_workers.dev`), 这个就是 v2ray 客户端要连的地址.
+> **TIPS:** You can customize the API address and App memory size through the workflow file.
 
-### 利用Github Actions 自动部署 IBM Cloud Fonudray
-* 返回 github, 到本项目 [https://github.com/fcying/IBMYes](https://github.com/fcying/IBMYes)
-* 点击右上角 Fork 到自己的github下, 点击 Settings
-* 点击 `Secrets` 建立以下几个`secret`:  
-  `IBM_ACCOUNT`:　　　IBM Cloud的登录邮箱和密码, 一行邮箱, 一行密码.  
-  `IBM_APP_NAME`:　　IBM应用的名称.  
-  `RESOURSE_ID`:　　　资源组ID, 只有一个应用可以不设. 可以在IBM Cloud的管理->账户->资源组里面找到.  
-  `APP_NAME`:　　　　　把v2ray重命名成APP_NAME, 默认值`test`.  
-  `V2_ID`:　　　　　　vmess id, 默认值`d007eab8-ac2a-4a7f-287a-f0d50ef08680`.  
-  `V2_PATH`:　　　　　ws path, 默认值`path`.  
-  `ALTER_ID`:　　　　alterId, 默认值`1`.  
-* 修改项目`README.md`(打开文件, 右上角有个 `Edit this file`的图标), 随便加个空格, 点 `Commit changes`.
-* 点击项目 Actions, 可以看到有个`IBM Cloud Deploy` 正在工作了, 每周会自动部署一次(IBM 10天不用会停).
+## Acknowledgments
 
-### 客户端设置
-#### Clash
-下面为对应的`vmess`部分设置.修改其中的`server`,`uuid`,`alterId`,`path`就好了.
-```
-  - name: "IBM"
-    type: vmess
-    server: cloudflare_workers.dev
-    port: 443
-    uuid: V2_ID
-    alterId: ALTER_ID
-    cipher: none
-    udp: true
-    tls: true
-    network: ws
-    ws-path: /V2_PATH
-```
+- [Project V](https://github.com/v2ray)
+- [IBM Cloud](https://cloud.ibm.com/)
+- [GitHub Actions](https://github.com/features/actions)
 
-#### v2rayng
-```
-    address: cloudflare_workers.dev
-    port: 443
-    id: V2_ID
-    alterId: ALTER_ID
-    security: none
-    network: ws
-    path: /V2_PATH
-    底层传输安全: tls
-```
+## Licence
 
-`server` `address` 可以使用 `cloudflare.com`或者别的`CF`的比较快的IP,对应的加一个伪装设置就行.
-```
-    clash:
-    server: cloudflare.com
-    ws-headers:
-      Host: cloudflare_workers.dev
-
-    v2rayng:
-    address: cloudflare.com
-    伪装域名: cloudflare_workers.dev
-
-```
+[MIT](https://github.com/P3TERX/IBM-CF-V2/blob/main/LICENSE) © P3TERX
